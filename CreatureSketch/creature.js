@@ -120,7 +120,7 @@ let eatDist = 200
 function setup() {
 
 
-  createCanvas(windowWidth+5, windowHeight+5);
+  createCanvas(windowWidth, windowHeight);
   noCursor()
   frameRate(100)
   angleMode(DEGREES)
