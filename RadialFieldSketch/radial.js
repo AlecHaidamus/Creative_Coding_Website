@@ -20,7 +20,7 @@ let distance = 0
 
 
 function setup() {
-  createCanvas(windowWidth, windowHeight);
+  createCanvas(windowWidth+5, windowHeight+5);
   angleMode(DEGREES)
   function clearLast(){
   indices.pop()

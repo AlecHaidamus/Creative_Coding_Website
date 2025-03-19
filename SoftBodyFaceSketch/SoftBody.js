@@ -171,7 +171,7 @@ function preload(){
 
 function setup() {
 
-createCanvas(windowWidth, windowHeight); 
+createCanvas(windowWidth+5, windowHeight+5); 
  
   colorMode(HSB)
 mouseSpeed = createVector(0,0)

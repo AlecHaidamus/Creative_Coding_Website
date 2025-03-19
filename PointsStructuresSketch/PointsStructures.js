@@ -64,7 +64,7 @@ function changeMode(){
 }
 
 function setup() {
-  createCanvas(windowWidth, windowHeight);
+  createCanvas(windowWidth+5, windowHeight+5);
   darkMode = createButton('Dark/Light')
   darkMode.mousePressed(changeMode)
 

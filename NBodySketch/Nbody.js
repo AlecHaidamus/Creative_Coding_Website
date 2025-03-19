@@ -160,7 +160,7 @@ function mouseClicked(){
 }
 
 function setup() {
-  createCanvas(windowWidth, windowHeight);
+  createCanvas(windowWidth+5, windowHeight+5);
   colorMode(HSB)
   smoothAvgX = width/2
   smoothAvgY = height/2
