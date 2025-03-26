@@ -42,7 +42,7 @@ let allYpos = 0
 let invert = 1
 
 let centerPull = 0.0002
-let intialVel = 0.5
+let intialVel = 0.6
 let avgPosSmoothing = 0.07
 let driftAway = 0.00007
 let lineDist = 50

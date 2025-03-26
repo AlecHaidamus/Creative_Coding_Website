@@ -7,6 +7,7 @@ class Guy{
       this.radius = radius
       this.center = createVector(x,y)
       this.numSprings = 0
+      this.isSpeaking = true
 
     for(let i = 0; i < this.numVertices; i++){
       
@@ -146,10 +147,34 @@ class Vert{
       text(vertNum,this.pos.x+10,this.pos.y)
       }
   
+      
 }
+
+function changeMouth(){
+  mouthCounter += 1
+  if (mouthCounter > mouths.length-1){mouthCounter = 0}
+  
+}
+
+function blink(){
+  if (floor(random(0,4)) == 1){
+
+    leftEye = leftEyeClosed
+    rightEye = rightEyeClosed
+
+    setTimeout(openUp,100)
+  }
+
+  function openUp(){
+    rightEye = rightEyeOpen
+    leftEye = leftEyeOpen
+  }
+
+}
+
 let restLength = 200
 let k = 0.001
-let kDistFactor = 0.002
+let kDistFactor = 0.003
 let restLengthDistFactor = 0.005
 let initVertSpeed = 0.3
 let guy1;
@@ -157,22 +182,50 @@ let spring1;
 let gravity = 0
 let drag = 0.99
 let numVertices = 7
-let radius = 150
+let radius = 250
 let vertexRand = 130
 let mouseSpeed;
 let horizon;
 let rot = 0
+let mouths = []
+let leftEye;
+let mouthCounter = 0
+let mouthSize = 0.8
+let eyesDist = 0.22
+let eyeSize = 0.95
 
 function preload(){
-  restingFace = loadImage("Images/blobFace.png")
+  // restingFace = loadImage("Images/blobFace.png")
   hypermarket = loadFont('hypermarket-regular.ttf')
+
+  openEyes = loadImage("blobFacialFeatures/openEyes.png")
+  closedEyes = loadImage("blobFacialFeatures/closedEyes.png")
+
+  leftEyeOpen = loadImage("blobFacialFeatures/leftOpen.png")
+  rightEyeOpen = loadImage("blobFacialFeatures/rightOpen.png")
+
+  leftEyeClosed = loadImage("blobFacialFeatures/leftClosed.png")
+  rightEyeClosed = loadImage("blobFacialFeatures/rightClosed.png")
+
+  mouthA = loadImage("blobFacialFeatures/mouths/A.png")
+  mouthE = loadImage("blobFacialFeatures/mouths/E.png")
+  mouthF = loadImage("blobFacialFeatures/mouths/F.png")
+  mouthM = loadImage("blobFacialFeatures/mouths/M.png")
+  mouthO = loadImage("blobFacialFeatures/mouths/O.png")
+  mouthSH = loadImage("blobFacialFeatures/mouths/SH.png")
   
 }
 
 function setup() {
-
 createCanvas(windowWidth+5, windowHeight+5); 
  
+mouths.push(mouthM)
+mouths.push(mouthA)
+mouths.push(mouthE)
+mouths.push(mouthF)
+mouths.push(mouthO)
+mouths.push(mouthSH)
+
   colorMode(HSB)
 mouseSpeed = createVector(0,0)
 guy1 = new Guy(400,400)
@@ -180,6 +233,12 @@ guy1 = new Guy(400,400)
 horizon = createVector(0,width)
   imageMode(CENTER)
   
+
+leftEye = leftEyeOpen
+rightEye = rightEyeOpen
+
+setInterval(changeMouth,50)
+setInterval(blink,600)
 
 }
 
@@ -240,22 +299,46 @@ for (let i = 0;i<guy1.vertexArray.length;i++){
 guy1.update()
 guy1.show()
 
+
+if (guy1.isSpeaking == false)
+    {
+     mouth = mouths[0]
+    //  print('notspeaking')
+    }
+else{mouth = mouths[mouthCounter]}
+
   blendMode(MULTIPLY)  
 
   strokeWeight(2)
+  
+
   push()
-  
-  translate(guy1.center.x,guy1.center.y)
-
-  let rotation = atan2( guy1.vertexArray[0].pos.x -guy1.center.x,
-                       guy1.vertexArray[0].pos.y -guy1.center.y)
-  
-  rotate(-rotation)
-  // print(-rotation)
-
-  image(restingFace,0,0,130,100)
+    translate(p5.Vector.lerp(guy1.center,guy1.vertexArray[2].pos,eyesDist))
+         rotation = atan2(guy1.vertexArray[0].pos.x -guy1.vertexArray[3].pos.x,
+                          guy1.vertexArray[0].pos.y -guy1.vertexArray[3].pos.y)
+        rotate(-rotation)
+    image(leftEye,0,-27,210*eyeSize,150*eyeSize)
   pop()
   
+
+  push()
+    translate(p5.Vector.lerp(guy1.center,guy1.vertexArray[5].pos,eyesDist))
+          rotation = atan2(guy1.vertexArray[0].pos.x -guy1.vertexArray[4].pos.x,
+                           guy1.vertexArray[0].pos.y -guy1.vertexArray[4].pos.y)
+        rotate(-rotation)
+    image(rightEye,0,-30,210*eyeSize,150*eyeSize)
+  pop()
+  
+
+  push()
+    translate(guy1.center)
+          rotation = atan2(guy1.vertexArray[0].pos.x -guy1.center.x,
+                           guy1.vertexArray[0].pos.y -guy1.center.y)
+        rotate(-rotation)
+    image(mouth,0,50,210*mouthSize,150*mouthSize)
+  pop()
+
+
   stroke(0)
      
 

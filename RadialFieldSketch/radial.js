@@ -22,6 +22,7 @@ let distance = 0
 function setup() {
   createCanvas(windowWidth+5, windowHeight+5);
   angleMode(DEGREES)
+  frameRate(60)
   function clearLast(){
   indices.pop()
   }
@@ -44,7 +45,7 @@ function draw() {
 
   
     strokeWeight(1.15)
-    stroke(0,100,90)
+    stroke(0,100,92)
   
   
   smoothMouseX = lerp(smoothMouseX,mouseX - ((width/rows)/2) ,mouseSmooth) 
@@ -67,7 +68,6 @@ function draw() {
 
 
 
-      let n = noise(x/noiseCoordFactor,y/noiseCoordFactor,frameCount*speed)
       let nc1 = noise(x/noiseCoordFactor,y/noiseCoordFactor,((frameCount - (smoothing/3)) *speed))
       let nc2 = noise(x/noiseCoordFactor,y/noiseCoordFactor,(frameCount - ((smoothing/3)*2)) *speed)
       let nE = noise(x/noiseCoordFactor,y/noiseCoordFactor,(frameCount - smoothing) *speed)
