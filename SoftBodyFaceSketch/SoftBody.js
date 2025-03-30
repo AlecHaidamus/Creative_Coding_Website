@@ -7,7 +7,10 @@ class Guy{
       this.radius = radius
       this.center = createVector(x,y)
       this.numSprings = 0
-      this.isSpeaking = true
+      this.isSpeaking = false
+      this.speech = ''
+      this.vowel = false
+      this.awake = true
 
     for(let i = 0; i < this.numVertices; i++){
       
@@ -65,6 +68,34 @@ class Guy{
     this.center = p5.Vector.div(allPos,this.vertexArray.length)
     // ellipse(this.center.x,this.center.y,10)
     // print(this.center)
+
+
+
+    if (this.isSpeaking == true&&this.awake==true){
+      
+
+        if (this.vowel == true){
+            this.vowel = false
+            this.speech += vowels[floor(random(0,vowels.length))]
+            }
+
+        else{this.vowel = true
+            this.speech += consonants[floor(random(0,consonants.length))]
+            }
+        if (floor(random(0,4)) == 1)
+            {this.speech += ' '}
+
+        if (floor(random(0,10)) == 1)
+            {this.speech += '\n'}
+            
+
+        
+        
+          
+        }
+        fill(0)
+      textSize(20)
+        text(this.speech,this.center.x+this.radius,this.center.y)
   }
   
   
@@ -85,6 +116,53 @@ class Guy{
                 this.vertexArray[1].pos.y)
     endShape()
     }
+
+    sleep(){
+      guy1.awake = false
+      guy1.speech = ' '
+  
+    }
+
+    changeMouth(){
+      mouthCounter += 1
+      if (mouthCounter > mouths.length-1){mouthCounter = 0}
+      
+    }
+
+    blink(){
+      if (floor(random(0,4)) == 1){
+    
+        leftEye = leftEyeClosed
+        rightEye = rightEyeClosed
+    
+        setTimeout(openUp,100)
+      }
+    
+      function openUp(){
+        rightEye = rightEyeOpen
+        leftEye = leftEyeOpen
+      }
+    
+    }
+
+    speak(){
+      if (floor(random(0,4)) == 1 && guy1.awake==true){
+
+        guy1.isSpeaking = true
+      
+
+        // print(this.isSpeaking)
+        guy1.speech = ''
+
+        setTimeout(guy1.shutUp,random(500,3000))
+      }
+    
+    }
+
+    shutUp(){
+      guy1.isSpeaking = false
+    }
+  
 }
       
 
@@ -150,28 +228,6 @@ class Vert{
       
 }
 
-function changeMouth(){
-  mouthCounter += 1
-  if (mouthCounter > mouths.length-1){mouthCounter = 0}
-  
-}
-
-function blink(){
-  if (floor(random(0,4)) == 1){
-
-    leftEye = leftEyeClosed
-    rightEye = rightEyeClosed
-
-    setTimeout(openUp,100)
-  }
-
-  function openUp(){
-    rightEye = rightEyeOpen
-    leftEye = leftEyeOpen
-  }
-
-}
-
 let restLength = 200
 let k = 0.001
 let kDistFactor = 0.003
@@ -188,6 +244,8 @@ let mouseSpeed;
 let horizon;
 let rot = 0
 let mouths = []
+let consonants = ['b','c','d','f','g','h','j','k','l','m','n','p','q','r','s','t','v','w','x','y','z']
+let vowels = ['a','e','i','o','u']
 let leftEye;
 let mouthCounter = 0
 let mouthSize = 0.8
@@ -237,8 +295,12 @@ horizon = createVector(0,width)
 leftEye = leftEyeOpen
 rightEye = rightEyeOpen
 
-setInterval(changeMouth,50)
-setInterval(blink,600)
+setInterval(guy1.changeMouth,50)
+setInterval(guy1.blink,600)
+setInterval(guy1.speak,800)
+
+
+
 
 }
 
@@ -251,7 +313,10 @@ function draw() {
   
   
 if (mouseIsPressed){
-  
+
+  clearTimeout()
+setTimeout(guy1.sleep,10000)
+guy1.awake = true
 mouseSpeed.set(mouseX-pmouseX,mouseY-pmouseY)
 // print(mouseSpeed)
 
@@ -294,13 +359,12 @@ for (let i = 0;i<guy1.vertexArray.length;i++){
 //   textFont(hypermarket)
 //   textSize(20)
 //   text("AHwiubdaknqoaA$%^&*", 500,100)
-  
-  
+guy1.show()  
 guy1.update()
-guy1.show()
 
 
-if (guy1.isSpeaking == false)
+
+if (guy1.isSpeaking == false||guy1.awake == false)
     {
      mouth = mouths[0]
     //  print('notspeaking')
@@ -311,6 +375,11 @@ else{mouth = mouths[mouthCounter]}
 
   strokeWeight(2)
   
+if (guy1.awake==false){
+  leftEye = leftEyeClosed
+  rightEye = rightEyeClosed
+}
+
 
   push()
     translate(p5.Vector.lerp(guy1.center,guy1.vertexArray[2].pos,eyesDist))
