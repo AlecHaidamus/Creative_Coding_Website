@@ -251,6 +251,7 @@ let mouthCounter = 0
 let mouthSize = 0.8
 let eyesDist = 0.22
 let eyeSize = 0.95
+let sleepTime;
 
 function preload(){
   // restingFace = loadImage("Images/blobFace.png")
@@ -299,6 +300,7 @@ setInterval(guy1.changeMouth,50)
 setInterval(guy1.blink,600)
 setInterval(guy1.speak,800)
 
+sleepTime = setTimeout(guy1.sleep,10000)
 
 
 
@@ -314,8 +316,8 @@ function draw() {
   
 if (mouseIsPressed){
 
-  clearTimeout()
-setTimeout(guy1.sleep,10000)
+clearTimeout(sleepTime)
+sleepTime = setTimeout(guy1.sleep,8000)
 guy1.awake = true
 mouseSpeed.set(mouseX-pmouseX,mouseY-pmouseY)
 // print(mouseSpeed)
