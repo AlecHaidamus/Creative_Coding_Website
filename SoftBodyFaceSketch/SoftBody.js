@@ -7,10 +7,13 @@ class Guy{
       this.radius = radius
       this.center = createVector(x,y)
       this.numSprings = 0
-      this.isSpeaking = false
-      this.speech = ''
+      this.istalking = false
+      this.speechStr = ''
       this.vowel = false
       this.awake = true
+      this.generatedStr = ''
+      this.charCounter = 0
+      
 
     for(let i = 0; i < this.numVertices; i++){
       
@@ -55,6 +58,46 @@ class Guy{
       // print(this.springArray)
     }
   
+
+    addChar(){
+
+      this.speechStr += this.generatedStr[this.charCounter]
+      this.charCounter +=1
+
+    }
+
+    genStr(){
+      
+      for(let i = 0; i<random(4,40);i++){
+
+        if (this.vowel == true){
+          this.vowel = false
+          this.generatedStr += vowels[floor(random(0,vowels.length))]
+          }
+  
+      else{this.vowel = true
+          this.generatedStr += consonants[floor(random(0,consonants.length))]
+          }
+      if (floor(random(0,4)) == 1&&this.generatedStr[this.generatedStr.length-2]!=' ')
+          {this.generatedStr += ' '}
+  
+      if (floor(random(0,10)) == 1
+          &&this.generatedStr[this.generatedStr.length-2]!='\n'
+          &&this.generatedStr[this.generatedStr.length-3]!='\n'
+          &&this.generatedStr[this.generatedStr.length-4]!='\n'
+          &&this.generatedStr[this.generatedStr.length-5]!='\n')
+          {this.generatedStr += '\n'}
+
+
+
+
+      }
+
+
+    }
+
+
+
   update(){
     
     for (let i = 0;i<this.springArray.length;i++){
@@ -70,32 +113,24 @@ class Guy{
     // print(this.center)
 
 
+  if(this.speechStr.length==this.generatedStr.length){
+    this.shutUp()
+  }
 
-    if (this.isSpeaking == true&&this.awake==true){
+    if (this.istalking == true
+      &&this.awake==true
+      &&sin(frameCount)>0.5
+      &&this.speechStr.length<this.generatedStr.length
+      )
       
+      {this.addChar()}
+    
 
-        if (this.vowel == true){
-            this.vowel = false
-            this.speech += vowels[floor(random(0,vowels.length))]
-            }
 
-        else{this.vowel = true
-            this.speech += consonants[floor(random(0,consonants.length))]
-            }
-        if (floor(random(0,4)) == 1)
-            {this.speech += ' '}
+    fill(0)
+    textSize(20)
+    text(this.speechStr,this.center.x+this.radius,this.center.y)
 
-        if (floor(random(0,10)) == 1)
-            {this.speech += '\n'}
-            
-
-        
-        
-          
-        }
-        fill(0)
-      textSize(20)
-        text(this.speech,this.center.x+this.radius,this.center.y)
   }
   
   
@@ -118,10 +153,44 @@ class Guy{
     }
 
     sleep(){
+      guy1.shutUp()
       guy1.awake = false
-      guy1.speech = ' '
+      guy1.generatedStr = ''
+      guy1.speechStr = ' '
+      
   
     }
+
+    
+
+    talk(){
+      if (floor(random(0,3)) == 1 && guy1.awake==true&&guy1.istalking == false){
+
+        guy1.istalking = true
+        guy1.charCounter = 0
+        guy1.speechStr = ''
+        guy1.generatedStr = ''
+       
+
+        guy1.genStr()
+        
+        voice.speak(guy1.generatedStr.replaceAll('\n',""))
+              print(guy1.generatedStr.replaceAll('\n',""))
+        
+        
+
+        
+      }
+    
+    }
+
+    shutUp(){
+      // voice.speak(this.speechStr)
+      guy1.istalking = false
+      // voice.stop()
+    }
+
+
 
     changeMouth(){
       mouthCounter += 1
@@ -144,27 +213,10 @@ class Guy{
       }
     
     }
-
-    speak(){
-      if (floor(random(0,4)) == 1 && guy1.awake==true){
-
-        guy1.isSpeaking = true
-      
-
-        // print(this.isSpeaking)
-        guy1.speech = ''
-
-        setTimeout(guy1.shutUp,random(500,3000))
-      }
-    
-    }
-
-    shutUp(){
-      guy1.isSpeaking = false
-    }
   
 }
       
+
 
 class Spring{
     constructor(vertA,vertB,k,restLength){
@@ -252,6 +304,12 @@ let mouthSize = 0.8
 let eyesDist = 0.22
 let eyeSize = 0.95
 let sleepTime;
+let voice
+
+function voiceReady(){
+console.log(voice.voices)
+
+}
 
 function preload(){
   // restingFace = loadImage("Images/blobFace.png")
@@ -273,11 +331,26 @@ function preload(){
   mouthO = loadImage("blobFacialFeatures/mouths/O.png")
   mouthSH = loadImage("blobFacialFeatures/mouths/SH.png")
   
+  
+voice = new p5.Speech();
+voice.onLoad = voiceReady;
+
+
+
 }
 
 function setup() {
 createCanvas(windowWidth+5, windowHeight+5); 
- 
+
+
+voice.setRate(1.4)
+// voice.setPitch(20)
+voice.interrupt = true
+
+voice.setVoice('Shelley (German (Germany))')
+
+
+
 mouths.push(mouthM)
 mouths.push(mouthA)
 mouths.push(mouthE)
@@ -296,15 +369,15 @@ horizon = createVector(0,width)
 leftEye = leftEyeOpen
 rightEye = rightEyeOpen
 
-setInterval(guy1.changeMouth,50)
+setInterval(guy1.changeMouth,70)
 setInterval(guy1.blink,600)
-setInterval(guy1.speak,800)
+setInterval(guy1.talk,1300)
 
 sleepTime = setTimeout(guy1.sleep,10000)
 
-
-
 }
+
+
 
 function draw() {
   
@@ -366,10 +439,10 @@ guy1.update()
 
 
 
-if (guy1.isSpeaking == false||guy1.awake == false)
+if (guy1.istalking == false||guy1.awake == false)
     {
      mouth = mouths[0]
-    //  print('notspeaking')
+    //  print('nottalking')
     }
 else{mouth = mouths[mouthCounter]}
 

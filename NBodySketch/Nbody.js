@@ -17,45 +17,49 @@ class Sphere{
       this.y += this.velY
       }
   
-    attractCollide(){
-      for (let i = 0;i<spheres.length;i++){
-      if (spheres[i]!=this){
-          
-          if (dist(spheres[i].x,spheres[i].y,this.x,this.y)<=diameter)
-            {let temp;
-              
-                  temp = spheres[i].velX
-                         spheres[i].velX = this.velX
-                         this.velX = temp
-              
-                  temp = spheres[i].velY
-                         spheres[i].velY = this.velY
-                         this.velY = temp
-                         bumpSound()
-             ripples.push(new Ripple((spheres[i].x+this.x)/2,
-                                     (spheres[i].y+this.y)/2
-                                    ))
-            
-            }
-      
-          let xDist = this.x-spheres[i].x
-          let yDist = this.y-spheres[i].y
+   attractCollide(){
+  for (let i = 0; i < spheres.length; i++){
+    const other = spheres[i];
+    if (other === this) continue;
 
-          if (dist(spheres[i].x,spheres[i].y,this.x,this.y)>=diameter){
-          
-          this.velX -= xDist * grav
-          this.velY -= yDist * grav
-          }
-        
-        if (dist(spheres[i].x,spheres[i].y,this.x,this.y)<diameter*1.2){
-          
-          this.velX += xDist * grav
-          this.velY += yDist * grav
-          }
-        
-      }
-      }
-      }
+    const dx = this.x - other.x;
+    const dy = this.y - other.y;
+    const d  = sqrt(dx*dx + dy*dy);
+
+    if (d > diameter){
+      this.velX -= dx * grav;
+      this.velY -= dy * grav;
+    }
+
+    if (d < diameter){
+      let vxTemp = this.velX;
+      let vyTemp = this.velY;
+      this.velX = other.velX;
+      this.velY = other.velY;
+      other.velX = vxTemp;
+      other.velY = vyTemp;
+
+      const overlap = diameter - d;
+      const nx = dx / (d || 0.001);
+      const ny = dy / (d || 0.001);
+      this.x   += nx * (overlap * 0.5);
+      this.y   += ny * (overlap * 0.5);
+      other.x  -= nx * (overlap * 0.5);
+      other.y  -= ny * (overlap * 0.5);
+
+      bumpSound();
+      ripples.push(
+        new Ripple(
+          (this.x + other.x)/2,
+          (this.y + other.y)/2
+        )
+      );
+    }
+    
+
+  }
+}
+
   
 
     
@@ -125,7 +129,7 @@ let spheres = []
 let initialVel = 1
 let diameter = 50
 let radius = diameter/2
-let grav = 0.0006
+let grav = 0.0009
 let smoothAvgX = 0
 let smoothAvgY = 0
 let avgSmoothing = 0.1
@@ -133,6 +137,7 @@ let scale1 = [207.65, 233.08, 261.63, 277.18, 311.13, 349.23, 392.00, 415.30, 46
 
 let notes = []
 let ripples =[]
+let txt = "click anywhere (sound on)"
              
 
 function preload(){
@@ -145,6 +150,7 @@ function preload(){
   notes[6] =loadSound("notes-007.wav")
   notes[7] =loadSound("notes-008.wav")
   notes[8] =loadSound("notes-009.wav")
+  font = loadFont("../hypermarket-light.ttf")
 
 }
 
@@ -155,8 +161,7 @@ function preload(){
 
 function mouseClicked(){
   spheres.push(new Sphere(mouseX, mouseY));
-  // print(avgPos())
-  
+txt = ''  
 }
 
 function setup() {
@@ -175,10 +180,12 @@ function draw(){
   
   background(0,0,0,0.3);  
   noStroke()
+  fill(0,0,100)
+  textFont(font)
+  textSize(width/40)
+  text(txt, width/2 - width/10,height/2)
   fill(190,90,30,1)
-  // print(notes)
-  
-  // translate(smoothAvgX-width/2,smoothAvgY-height/2)
+
   
   for (let i = 0;i<spheres.length;i++){
     spheres[i].show()

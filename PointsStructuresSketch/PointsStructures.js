@@ -39,7 +39,6 @@ let avgXpos = 0
 let avgYpos = 0
 let allXpos = 0
 let allYpos = 0
-let invert = 1
 
 let centerPull = 0.0002
 let intialVel = 0.6
@@ -47,32 +46,24 @@ let avgPosSmoothing = 0.07
 let driftAway = 0.00007
 let lineDist = 50
 let lineDistMin = 0
+let txt = "Click and Drag"
 
 function mouseDragged(){
   points.push(new Point(mouseX, mouseY));
   // print(points)
 }
 
-function changeMode(){
-  if (invert == 0)
-      {invert = 1}
-  
-  else {invert = 0}
-  
-  print(invert)
-  
-}
+function mouseClicked(){txt= ''}
 
 function setup() {
   createCanvas(windowWidth+5, windowHeight+5);
-  darkMode = createButton('Dark/Light')
-  darkMode.mousePressed(changeMode)
+  font = loadFont("../hypermarket-light.ttf")
 
 }
 
 function draw() {
   colorMode(HSB)
-  background(0,0,0);
+  background(0,0,100);
   frameRate(100)
   
   allXpos = 0
@@ -107,7 +98,7 @@ else{
   for (let i = 0; i<points.length;i++){
 
     strokeWeight(0.3)
-    stroke(0,0,100,0.3)
+    stroke(0,0,0,0.2)
     for (let j = 0; j<points.length;j++){
       
       if (dist(points[i].x,points[i].y,points[j].x,points[j].y)<lineDist&&
@@ -115,9 +106,7 @@ else{
         
         {line(points[i].x,points[i].y,points[j].x,points[j].y)}
     }
-    
-    if (invert == 0)
-      {points[i].show()}
+
     
     points[i].update()
     
@@ -141,16 +130,12 @@ else{
     
        {points.splice(i,1)}
   }
-  
-  // endShape()
-  
-  
-//   fill(0,100,100,2)
-// ellipse(avgXpos,avgYpos,5)
-//   fill(0,0,0,2)
-// text(' avg',avgXpos,avgYpos)
-  
-    if (invert == 1){filter(INVERT)}
+
+  fill(0,0,0)
+  textSize(40)
+  textFont(font)
+  text(txt,width/2-100,height/2)
+
 
  
 }
